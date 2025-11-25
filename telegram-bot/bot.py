@@ -214,6 +214,7 @@ async def ativar(update: Update, context: ContextTypes.DEFAULT_TYPE) -> None:
     
     nome = " ".join(args[2:]) if len(args) > 2 else f"Cliente {cpf[-4:]}"
     
+    logger.info(f"📝 ATIVAR: {nome} | CPF: {cpf} | Meses: {meses}")
     await update.message.reply_text("⏳ Processando...")
     licenses, sha = get_licenses()
     
@@ -244,6 +245,7 @@ async def ativar(update: Update, context: ContextTypes.DEFAULT_TYPE) -> None:
     licenses.append(nova_licenca)
     
     if save_licenses(licenses, sha, f"Ativar: {nome}"):
+        logger.info(f"✅ ATIVADO: {nome} | Chave: {key} | Expira: {expires}")
         await update.message.reply_text(
             f"✅ LICENCA ATIVADA!\n\n"
             f"👤 Cliente: {nome}\n"
@@ -277,11 +279,13 @@ async def renovar(update: Update, context: ContextTypes.DEFAULT_TYPE) -> None:
         await update.message.reply_text("Meses invalido.")
         return
     
+    logger.info(f"📝 RENOVAR: CPF {cpf} | Meses: {meses}")
     await update.message.reply_text("⏳ Processando...")
     licenses, sha = get_licenses()
     
     lic = find_license_by_cpf(cpf, licenses)
     if not lic:
+        logger.warning(f"❌ RENOVAR FALHOU: CPF {cpf} não encontrado")
         await update.message.reply_text(f"❌ Licenca nao encontrada: {cpf}")
         return
     
@@ -327,6 +331,7 @@ async def renovar(update: Update, context: ContextTypes.DEFAULT_TYPE) -> None:
     lic["status"] = "active"
     
     if save_licenses(licenses, sha, f"Renovar: {lic.get('customer')}"):
+        logger.info(f"✅ RENOVADO: {lic.get('customer')} | Nova validade: {new_expires} | Tipo: {tipo}")
         await update.message.reply_text(
             f"✅ {tipo}!\n\n"
             f"👤 {lic.get('customer')}\n"
@@ -335,6 +340,7 @@ async def renovar(update: Update, context: ContextTypes.DEFAULT_TYPE) -> None:
             f"⏱️ Período: {meses} mês(es)"
         )
     else:
+        logger.error(f"❌ ERRO ao renovar: {lic.get('customer')}")
         await update.message.reply_text("❌ Erro ao salvar.")
 
 
@@ -354,23 +360,28 @@ async def cancelar(update: Update, context: ContextTypes.DEFAULT_TYPE) -> None:
     
     cpf = normalize_cpf_cnpj(args[0])
     
+    logger.info(f"📝 CANCELAR: CPF {cpf}")
     await update.message.reply_text("⏳ Processando...")
     licenses, sha = get_licenses()
     
     lic = find_license_by_cpf(cpf, licenses)
     if not lic:
+        logger.warning(f"❌ CANCELAR FALHOU: CPF {cpf} não encontrado")
         await update.message.reply_text(f"❌ Nao encontrada: {cpf}")
         return
     
+    logger.info(f"🔴 CANCELANDO: {lic.get('customer')} | CPF: {cpf}")
     lic["status"] = "cancelled"
     lic["expires"] = date.today().isoformat()  # Zerar validade imediatamente
     lic["key"] = ""  # Invalidar chave
     
     if save_licenses(licenses, sha, f"Cancelar: {lic.get('customer')}"):
+        logger.info(f"✅ CANCELADO: {lic.get('customer')} | CPF: {cpf}")
         await update.message.reply_text(
             f"✅ CANCELADA!\n👤 {lic.get('customer')}\n📅 Licença zerada."
         )
     else:
+        logger.error(f"❌ ERRO ao cancelar: {lic.get('customer')}")
         await update.message.reply_text("❌ Erro ao salvar.")
 
 
@@ -467,8 +478,11 @@ def main() -> None:
         logger.error("TELEGRAM_BOT_TOKEN nao configurado!")
         return
     
-    logger.info(f"Iniciando bot... Owner: {GITHUB_OWNER}, Repo: {GITHUB_REPO}")
-    logger.info(f"Admins: {ADMIN_USER_IDS}")
+    logger.info("=" * 50)
+    logger.info("🤖 BOT DE LICENÇAS INICIANDO...")
+    logger.info(f"📦 Repo: {GITHUB_OWNER}/{GITHUB_REPO}")
+    logger.info(f"👮 Admins: {ADMIN_USER_IDS}")
+    logger.info("=" * 50)
     
     app = Application.builder().token(TELEGRAM_TOKEN).build()
     
@@ -480,7 +494,7 @@ def main() -> None:
     app.add_handler(CommandHandler("status", status_cmd))
     app.add_handler(CommandHandler("listar", listar))
     
-    logger.info("Bot iniciado!")
+    logger.info("✅ Bot pronto! Aguardando comandos...")
     app.run_polling(allowed_updates=Update.ALL_TYPES)
 
 
