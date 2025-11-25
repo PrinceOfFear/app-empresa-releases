@@ -285,22 +285,60 @@ async def renovar(update: Update, context: ContextTypes.DEFAULT_TYPE) -> None:
         await update.message.reply_text(f"❌ Licenca nao encontrada: {cpf}")
         return
     
+    # Verificar status e data atual
+    current_status = lic.get("status", "")
+    current_key = lic.get("key", "")
+    
     try:
         current_expires = date.fromisoformat(lic.get("expires", ""))
     except ValueError:
         current_expires = date.today()
     
-    base_date = max(current_expires, date.today())
+    # REGRA CLARA:
+    # Se status == "cancelled" OU chave está vazia OU data <= hoje:
+    #   -> Começa do ZERO (hoje)
+    # Se status == "active" E data > hoje:
+    #   -> SOMA a partir da data de expiração
+    
+    is_cancelled = current_status == "cancelled"
+    is_key_empty = not current_key or current_key.strip() == ""
+    is_expired = current_expires <= date.today()
+    
+    # Licença deve começar do zero se: cancelada, sem chave, ou expirada
+    should_start_from_zero = is_cancelled or is_key_empty or is_expired
+    
+    if should_start_from_zero:
+        # Começa do zero absoluto (hoje)
+        base_date = date.today()
+        # Gerar nova chave
+        lic["key"] = generate_license_key()
+        motivo = "cancelada" if is_cancelled else ("sem chave" if is_key_empty else "expirada")
+        logger.info(f"Renovando licenca ({motivo}) - comecando do zero: {base_date}")
+        tipo = "REATIVADA (do zero)"
+    else:
+        # Licença ativa com dias restantes - SOMA a partir da expiração
+        base_date = current_expires
+        logger.info(f"Renovando licenca ATIVA - somando a partir de: {base_date}")
+        tipo = "RENOVADA (+dias)"
+    
     new_expires = base_date + timedelta(days=30 * meses)
     
     lic["expires"] = new_expires.isoformat()
     lic["status"] = "active"
     
+    # Mensagem diferenciada
+    if was_cancelled:
+        tipo = "REATIVADA (do zero)"
+    else:
+        tipo = "RENOVADA"
+    
     if save_licenses(licenses, sha, f"Renovar: {lic.get('customer')}"):
         await update.message.reply_text(
-            f"✅ RENOVADA!\n\n"
+            f"✅ {tipo}!\n\n"
             f"👤 {lic.get('customer')}\n"
-            f"📅 Nova validade: {new_expires.isoformat()}"
+            f"📅 Início: {base_date.isoformat()}\n"
+            f"📅 Validade: {new_expires.isoformat()}\n"
+            f"⏱️ Período: {meses} mês(es)"
         )
     else:
         await update.message.reply_text("❌ Erro ao salvar.")
@@ -331,10 +369,12 @@ async def cancelar(update: Update, context: ContextTypes.DEFAULT_TYPE) -> None:
         return
     
     lic["status"] = "cancelled"
+    lic["expires"] = date.today().isoformat()  # Zerar validade imediatamente
+    lic["key"] = ""  # Invalidar chave
     
     if save_licenses(licenses, sha, f"Cancelar: {lic.get('customer')}"):
         await update.message.reply_text(
-            f"✅ CANCELADA!\n👤 {lic.get('customer')}"
+            f"✅ CANCELADA!\n👤 {lic.get('customer')}\n📅 Licença zerada."
         )
     else:
         await update.message.reply_text("❌ Erro ao salvar.")
