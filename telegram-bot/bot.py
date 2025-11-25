@@ -326,12 +326,6 @@ async def renovar(update: Update, context: ContextTypes.DEFAULT_TYPE) -> None:
     lic["expires"] = new_expires.isoformat()
     lic["status"] = "active"
     
-    # Mensagem diferenciada
-    if was_cancelled:
-        tipo = "REATIVADA (do zero)"
-    else:
-        tipo = "RENOVADA"
-    
     if save_licenses(licenses, sha, f"Renovar: {lic.get('customer')}"):
         await update.message.reply_text(
             f"✅ {tipo}!\n\n"
