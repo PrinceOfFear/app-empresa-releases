@@ -1,0 +1,10 @@
+﻿{
+    "stable": {
+        "version": "1.2.3",
+        "release_notes": "Corrigido erro Failed to load Python DLL durante atualizacao automatica",
+        "checksum": "sha256:0db417d19b7f5717c5e19b0b06618653b1460cff73408d8bbfc2c69bd7f8c3ea",
+        "build_date": "2025-01-27",
+        "download_url": "https://github.com/PrinceOfFear/app-empresa-releases/releases/download/v1.2.3/SistemaGestaoEmpresarial.exe",
+        "file_size": 79316483
+    }
+}
