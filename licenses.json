@@ -42,7 +42,18 @@
       "expires": "2025-12-26",
       "max_users": 3,
       "created_at": "2025-11-26T02:45:23.395505"
+    },
+    {
+      "key": "XQJ8-4VZJ-REZK-WASP",
+      "cpf_cnpj": "12423402340",
+      "customer": "Cliente 2340",
+      "email": "",
+      "plan": "profissional",
+      "status": "active",
+      "expires": "2025-12-26",
+      "max_users": 3,
+      "created_at": "2025-11-26T04:05:32.844486"
     }
   ],
-  "updated_at": "2025-11-26T02:45:23.395515"
+  "updated_at": "2025-11-26T04:05:32.844497"
 }
