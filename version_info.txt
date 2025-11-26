@@ -1,0 +1,33 @@
+# UTF-8
+VSVersionInfo(
+  ffi=FixedFileInfo(
+    filevers=(1, 0, 9, 0),
+    prodvers=(1, 0, 9, 0),
+    mask=0x3f,
+    flags=0x0,
+    OS=0x40004,
+    fileType=0x1,
+    subtype=0x0,
+    date=(0, 0)
+  ),
+  kids=[
+    StringFileInfo(
+      [
+        StringTable(
+          u'041604B0',
+          [
+            StringStruct(u'CompanyName', u'Sua Empresa'),
+            StringStruct(u'FileDescription', u'Sistema de Gestão Empresarial'),
+            StringStruct(u'FileVersion', u'1.0.9'),
+            StringStruct(u'InternalName', u'SistemaGestaoEmpresarial'),
+            StringStruct(u'LegalCopyright', u'Copyright © 2025 Sua Empresa'),
+            StringStruct(u'OriginalFilename', u'SistemaGestaoEmpresarial.exe'),
+            StringStruct(u'ProductName', u'Sistema de Gestão Empresarial'),
+            StringStruct(u'ProductVersion', u'1.0.9'),
+          ]
+        )
+      ]
+    ),
+    VarFileInfo([VarStruct(u'Translation', [0x0416, 1200])])
+  ]
+)
