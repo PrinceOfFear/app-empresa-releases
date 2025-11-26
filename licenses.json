@@ -31,7 +31,18 @@
       "expires": "2025-12-26",
       "max_users": 3,
       "created_at": "2025-11-26T02:26:17.866247"
+    },
+    {
+      "key": "T27G-RX3Q-KCKJ-YQWE",
+      "cpf_cnpj": "54625899800",
+      "customer": "Cliente 9800",
+      "email": "",
+      "plan": "profissional",
+      "status": "active",
+      "expires": "2025-12-26",
+      "max_users": 3,
+      "created_at": "2025-11-26T02:45:23.395505"
     }
   ],
-  "updated_at": "2025-11-26T02:26:17.866261"
+  "updated_at": "2025-11-26T02:45:23.395515"
 }
