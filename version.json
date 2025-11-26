@@ -1,0 +1,10 @@
+{
+    "stable": {
+        "version": "1.2.2",
+        "release_notes": "Removido aviso desnecessário ao tentar trocar operador com caixa aberto",
+        "checksum": "sha256:ab996c743492485a930dd9f1b67a6bc04c88969d8b6629cb9d7ebd3f2853b099",
+        "build_date": "2025-01-27",
+        "download_url": "https://github.com/PrinceOfFear/app-empresa-releases/releases/download/v1.2.2/SistemaGestaoEmpresarial.exe",
+        "file_size": 79314783
+    }
+}
